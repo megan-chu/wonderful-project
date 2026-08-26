@@ -13,6 +13,50 @@ admission, records), since no such data exists in this system.
 See [PLAN.md](PLAN.md) for the full design rationale: data constraints, the recommendation/ranking logic,
 and the escalation policy.
 
+## Architecture
+
+```mermaid
+flowchart LR
+    V["Voice CLI\n(simulated call)"] --> AC
+    W["WhatsApp CLI\n(simulated chat)"] --> AC
+
+    AC["Agent Core\nsystem prompt + manual\ntool-use loop"] <--> Claude["Claude API\n(claude-sonnet-5)"]
+    AC --> Tools["Tool dispatcher"]
+
+    Tools --> Dir[("ClinicDirectory\n7,029 doctors, in-memory")]
+    Tools --> Esc["Escalation handler\nHandoffEvent + ticket"]
+    Dir --> JSON[("healthcare_data.json")]
+```
+
+Both channel adapters call the same `Agent.run_turn(session, text)` - only presentation differs (voice:
+short, spoken-style, no markdown; WhatsApp: full doctor card with clinic/address/phone/email). A real
+Twilio/WhatsApp Cloud API integration would only need new adapters at that same boundary, converting
+audio/webhooks to text - the agent core, tools, and prompts wouldn't change.
+
+## How a conversation flows
+
+```mermaid
+flowchart TD
+    A["Patient message"] --> B["Identify language\nupdate_patient_profile"]
+    B --> C{"What does the\npatient need?"}
+
+    C -->|"Direct lookup\n(hours, doctors in a city, ...)"| D["find_doctors /\nget_location_overview"]
+
+    C -->|"Wants a doctor\nrecommended"| E{"Have symptom,\nlocation, time?"}
+    E -->|No| F["Ask what's missing\n(empathetic, one thing at a time)"]
+    F --> E
+    E -->|Yes| G["recommend_doctors\nlanguage required, location/time ranked"]
+
+    C -->|"Patient-specific / PHI\n(ward, admission, records)\nor explicit human request\nor out of scope"| H["escalate_to_human"]
+
+    D --> I["Reply with real data\n(never fabricated)"]
+    G --> I
+    H --> J["Reassuring handoff message\n+ ticket created"]
+
+    I --> K["Session stays open\nfor follow-up questions"]
+    J --> K
+```
+
 ## Setup
 
 ```powershell
@@ -54,7 +98,9 @@ agent core is adapter-based so a real integration could be added later without c
 To use a different model for one run, pass `--model` instead of setting an env var:
 
 ```powershell
-python cli.py whatsapp --model claude-haiku-4-5
+python cli.py whatsapp --model claude-sonnet-5    # default - balances cost and quality
+python cli.py whatsapp --model claude-haiku-4-5   # cheaper/faster, less reliable on this prompt
+python cli.py whatsapp --model claude-opus-5      # most capable, priciest
 ```
 
 ## Tests
