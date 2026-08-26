@@ -78,17 +78,36 @@ python cli.py demo       # scripted multilingual + escalation demo transcript
 ```
 
 Type to the agent in **any language** - it detects the language and replies in kind. Try a symptom-led
-conversation to see the full flow, e.g. on WhatsApp:
+conversation to see the full flow, e.g. on WhatsApp. Both excerpts below are real output from `python
+cli.py whatsapp` (trimmed for length - dialogue shortened, no facts changed); English is a translation of
+the French, shown underneath:
 
 ```
-Patient: hey, i've had knee pain for like 2 weeks now, not going away, can you recommend a specialist?
-Agent:   sorry to hear that! an orthopedist should be able to help. where are you based, and
-         morning or afternoon work better for you?
-Patient: Targu Mures, weekday mornings only
-Agent:   I'd recommend Dr. Ana Barbu, orthopedist at Clinica Targu Mures Care (Strada Unirii 103,
-         Targu Mures). She speaks Romanian, English, and French, 9 yrs experience, available
-         Mon-Fri 9am-5pm.
-         Phone: +40-254-615-829 - Email: ana.barbu@clinica-targu-mures-care.ro
+Patient: hey, i've had knee pain for about 2 weeks now, it's not going away 😕 can you
+         recommend a specialist?
+Agent:   Ah, sorry to hear that! Which city do you prefer, and morning or afternoon?
+Patient: I'm in Targu Mures, and I'm only available weekday mornings
+Agent:   Here's my recommendation in Targu Mures, available weekday mornings and speaks
+         French 👇
+
+         Dr. Ana Barbu - Orthopedics
+         🏥 Clinica Targu Mures Care, Strada Unirii 103, Targu Mures
+         🗓️ Mon-Fri 09:00-17:00 · 💼 9 years experience
+         📞 +40-254-615-829 · ✉️ ana.barbu@clinica-targu-mures-care.ro
+```
+
+```
+Patient: salut, j'ai mal au genou depuis environ 2 semaines, ça passe pas 😕 vous pouvez me
+         recommander un spécialiste ?
+Agent:   Ah, désolé d'entendre ça ! Vous préférez quelle ville, et plutôt matin ou après-midi ?
+Patient: Je suis à Targu Mures, et je ne suis disponible que les matins en semaine
+Agent:   Voici ma recommandation à Targu Mures, disponible en semaine le matin et parlant
+         français 👇
+
+         Dr Ana Barbu - Orthopédie
+         🏥 Clinica Targu Mures Care, Strada Unirii 103, Targu Mures
+         🗓️ Lun-Ven 09h00-17h00 · 💼 9 ans d'expérience
+         📞 +40-254-615-829 · ✉️ ana.barbu@clinica-targu-mures-care.ro
 ```
 
 Both channels are text-in/text-out simulations - typed input stands in for an already-transcribed speech
